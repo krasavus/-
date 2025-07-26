@@ -3,6 +3,7 @@
     package="com.example.nomorebadwords">
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -19,8 +20,22 @@
             </intent-filter>
         </activity>
         <activity android:name=".PunishmentActivity" />
+        <activity android:name=".PunishmentCategoriesActivity" />
+        <activity android:name=".CustomPunishmentActivity" />
+        <activity android:name=".AchievementsActivity" />
+        <activity android:name=".StatisticsActivity" />
+        <activity android:name=".PanicActivity" />
 
         <receiver android:name=".NotificationReceiver" />
+
+        <receiver android:name=".AppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/app_widget_info" />
+        </receiver>
     </application>
 
 </manifest>
