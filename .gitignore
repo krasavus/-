@@ -1,0 +1,26 @@
+# Gradle files
+.gradle/
+build/
+# Local properties
+local.properties
+# IDE files
+.idea/
+*.iml
+# Keystore files
+*.jks
+*.keystore
+# NDK files
+.cxx/
+# Google services
+google-services.json
+# Lint
+lint/reports/
+# Log files
+*.log
+# Generated files
+/gradle/wrapper/gradle-wrapper.jar
+/gradlew
+/gradlew.bat
+/app/build/
+/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
