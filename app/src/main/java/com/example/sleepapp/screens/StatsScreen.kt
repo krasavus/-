@@ -1,146 +1,130 @@
 package com.example.sleepapp.screens
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.sleepapp.ui.theme.LightBlue
-import com.example.sleepapp.ui.theme.TextGray
+import com.example.sleepapp.ui.theme.*
 
 @Composable
 fun StatsScreen() {
-    var selectedPeriod by remember { mutableStateOf("Weekly") }
-    val sleepData = mapOf(
-        "Weekly" to listOf(6.5f, 7f, 8f, 5.5f, 7.5f, 6f, 8.5f),
-        "Monthly" to List(30) { (5..9).random().toFloat() } // Dummy data for monthly
-    )
-    val days = if (selectedPeriod == "Weekly") listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun") else List(30) { (it + 1).toString() }
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Sleep Statistics",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        TimePeriodSelector(selectedPeriod) { period ->
-            selectedPeriod = period
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        SleepBarChart(data = sleepData[selectedPeriod]!!, labels = days)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            StatCard(title = "Average Sleep", value = "7h 15m", modifier = Modifier.weight(1f))
-            StatCard(title = "Sleep Quality", value = "85%", modifier = Modifier.weight(1f))
-        }
-    }
-}
-
-@Composable
-fun TimePeriodSelector(selectedPeriod: String, onPeriodSelected: (String) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
-            .padding(4.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        val periods = listOf("Weekly", "Monthly")
-        periods.forEach { period ->
-            val isSelected = period == selectedPeriod
-            TextButton(
-                onClick = { onPeriodSelected(period) },
-                modifier = Modifier
-                    .weight(1f)
-                    .background(
-                        if (isSelected) LightBlue else MaterialTheme.colorScheme.surface,
-                        RoundedCornerShape(8.dp)
-                    )
-            ) {
-                Text(
-                    text = period,
-                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else TextGray
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(MidnightStart, MidnightEnd)
                 )
-            }
+            )
+    ) {
+        StatsHeader()
+        LazyColumn {
+            item { DateChips() }
+            item { SleepScoreIndicator() }
+            item { Spacer(modifier = Modifier.height(24.dp)) }
+            item { InsightCards() }
+            item { Spacer(modifier = Modifier.height(24.dp)) }
+            item { SleepCyclesChart() }
+            item { Spacer(modifier = Modifier.height(24.dp)) }
         }
     }
 }
 
 @Composable
-fun SleepBarChart(data: List<Float>, labels: List<String>) {
-    val maxSleep = data.maxOrNull() ?: 1f
+fun SleepCyclesChart() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            .padding(horizontal = 16.dp)
+            .height(250.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = CardDark)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            data.forEachIndexed { index, sleepHours ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Bottom,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .width(20.dp)
-                            .fillMaxHeight(sleepHours / maxSleep)
-                            .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-                            .background(LightBlue)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    if (labels.size == 7) { // Only show labels for weekly view to avoid clutter
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Chart Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Sleep Cycles", style = MaterialTheme.typography.titleMedium)
+                // Legend
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    LegendItem("Light", Color(0xFF06b6d4))
+                    LegendItem("REM", Color(0xFF8b5cf6))
+                    LegendItem("Deep", Primary)
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            // Chart Bars
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                val data by remember {
+                    mutableStateOf((1..7).map {
+                        val light = (20..40).random()
+                        val rem = (20..30).random()
+                        val deep = (15..25).random()
+                        listOf(light, rem, deep)
+                    })
+                }
+
+                days.forEachIndexed { index, day ->
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .weight(1f)
+                                .width(20.dp),
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight(data[index][0] / 100f)
+                                    .width(20.dp)
+                                    .background(Color(0xFF06b6d4), RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight(data[index][1] / 100f)
+                                    .width(20.dp)
+                                    .background(Color(0xFF8b5cf6))
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight(data[index][2] / 100f)
+                                    .width(20.dp)
+                                    .background(Primary, RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
+                            )
+                        }
                         Text(
-                            text = labels[index],
-                            fontSize = 12.sp,
-                            color = TextGray
+                            text = day,
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(top = 4.dp)
                         )
                     }
                 }
@@ -150,27 +134,173 @@ fun SleepBarChart(data: List<Float>, labels: List<String>) {
 }
 
 @Composable
-fun StatCard(title: String, value: String, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+fun LegendItem(text: String, color: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(color, CircleShape)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(text, style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+@Composable
+fun InsightCards() {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium.copy(color = TextGray)
+        item {
+            InsightCard(
+                title = "Deep Sleep Rising",
+                message = "You got 20% more deep sleep than your monthly average.",
+                icon = Icons.Default.TrendingUp,
+                iconColor = Primary
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center
+        }
+        item {
+            InsightCard(
+                title = "Consistent Bedtime",
+                message = "Great job! You went to bed within your 30 min target window.",
+                icon = Icons.Default.Bedtime,
+                iconColor = Indigo
             )
         }
     }
 }
+
+@Composable
+fun InsightCard(title: String, message: String, icon: androidx.compose.ui.graphics.vector.ImageVector, iconColor: Color) {
+    Card(
+        modifier = Modifier.width(280.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = CardDark)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = iconColor,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(iconColor.copy(alpha = 0.1f), CircleShape)
+                    .padding(8.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                )
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodySmall.copy(color = Color.White.copy(alpha = 0.7f)),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun StatsHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        IconButton(onClick = { /* TODO: Navigate back */ }) {
+            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+        }
+        Text("Sleep Statistics", style = MaterialTheme.typography.titleLarge)
+        IconButton(onClick = { /* TODO: Share */ }) {
+            Icon(Icons.Default.Share, contentDescription = "Share", tint = Primary)
+        }
+    }
+}
+
+@Composable
+fun DateChips() {
+    var selectedChip by remember { mutableStateOf("This Week") }
+    val chips = listOf("This Week", "Last Week", "Custom")
+
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(chips.size) { index ->
+            val isSelected = selectedChip == chips[index]
+            Button(
+                onClick = { selectedChip = chips[index] },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isSelected) Primary else CardDark,
+                    contentColor = if (isSelected) Color.White else Color.White.copy(alpha = 0.7f)
+                ),
+                shape = RoundedCornerShape(50)
+            ) {
+                if (chips[index] == "Custom") {
+                    Icon(
+                        Icons.Default.CalendarMonth,
+                        contentDescription = "Custom Date",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+                Text(chips[index])
+            }
+        }
+    }
+}
+
+@Composable
+fun SleepScoreIndicator() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier.size(192.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                drawArc(
+                    color = CardDark,
+                    startAngle = -90f,
+                    sweepAngle = 360f,
+                    useCenter = false,
+                    style = Stroke(width = 12.dp.toPx())
+                )
+                drawArc(
+                    brush = Brush.linearGradient(colors = listOf(Primary, Indigo)),
+                    startAngle = -90f,
+                    sweepAngle = 360 * 0.85f, // 85% score
+                    useCenter = false,
+                    style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
+                )
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    "85",
+                    style = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.Bold)
+                )
+                Text(
+                    "Great Sleep",
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.6f))
+                )
+            }
+        }
+    }
+}
+
+// Old composables removed

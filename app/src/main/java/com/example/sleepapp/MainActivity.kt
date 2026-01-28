@@ -23,10 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.sleepapp.navigation.Screen
-import com.example.sleepapp.screens.HomeScreen
-import com.example.sleepapp.screens.ProfileScreen
-import com.example.sleepapp.screens.SoundsScreen
-import com.example.sleepapp.screens.StatsScreen
+import com.example.sleepapp.screens.*
 import com.example.sleepapp.ui.theme.SleepAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -51,8 +48,8 @@ fun MainScreen() {
     val items = listOf(
         Screen.Home,
         Screen.Stats,
-        Screen.Sounds,
-        Screen.Profile,
+        Screen.Library,
+        Screen.Luna,
     )
     Scaffold(
         bottomBar = {
@@ -61,8 +58,8 @@ fun MainScreen() {
                 val currentDestination = navBackStackEntry?.destination
                 items.forEach { screen ->
                     NavigationBarItem(
-                        icon = { Icon(screen.icon, contentDescription = null) },
-                        label = { Text(screen.title) },
+                        icon = { Icon(screen.icon!!, contentDescription = null) },
+                        label = { Text(screen.title!!) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             navController.navigate(screen.route) {
@@ -79,9 +76,12 @@ fun MainScreen() {
         }
     ) { innerPadding ->
         NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
-            composable(Screen.Home.route) { HomeScreen() }
+            composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.Stats.route) { StatsScreen() }
-            composable(Screen.Sounds.route) { SoundsScreen() }
+            composable(Screen.Library.route) { SoundLibraryScreen() }
+            composable(Screen.Luna.route) { AiConsultantScreen() }
+            composable(Screen.HabitJournal.route) { HabitJournalScreen() }
+            composable(Screen.AlarmSettings.route) { AlarmSettingsScreen() }
             composable(Screen.Profile.route) { ProfileScreen() }
         }
     }

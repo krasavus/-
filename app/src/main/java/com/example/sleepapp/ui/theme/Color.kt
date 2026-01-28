@@ -12,3 +12,11 @@ val Green = Color(0xFF34C759)
 val Orange = Color(0xFFFF9500)
 val Pink = Color(0xFFFF2D55)
 val Teal = Color(0xFF5AC8FA)
+
+// New colors from the design update
+val MidnightStart = Color(0xFF0A1128)
+val MidnightEnd = Color(0xFF1C1C3A)
+val CardDark = Color(0xFF1F2940)
+val Primary = Color(0xFF135bec)
+val Emerald = Color(0xFF34D399)
+val Indigo = Color(0xFF818CF8)
